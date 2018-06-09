@@ -3,12 +3,8 @@
 #include <sstream>
 #include <memory>
 
-#include <cryptopp/sha.h>
-#include <cryptopp/filters.h>
-#include <crypto++/rsa.h>
-#include <crypto++/osrng.h>
-#include <crypto++/base64.h>
-#include <crypto++/files.h>
+#include "HashHelper.h"
+#include "ProofKitPair.h"
 
 /*void GenKeyPair()
 {
@@ -70,82 +66,12 @@ void Sign()
 	sinksig.Put(sbbSignature, sbbSignature.size());
 }*/
 
-std::string SHA256HashString(std::string aString)
-{
-	std::string digest;
-	CryptoPP::SHA256 hash;
-
-	CryptoPP::StringSource foo(aString, true,
-			new CryptoPP::HashFilter(hash,
-				new CryptoPP::Base64Encoder (
-					new CryptoPP::StringSink(digest), false)));
-
-	return digest;
-}
-
-class ProofKitPair
-{
-public:
-	ProofKitPair();
-	ProofKitPair(const int value);
-
-	std::string getSecretKey() const { return this->secretKey; }
-	std::string getProofKit() const { return this->proofKit; }
-	int getValue() const { return this->value; }
-
-	std::string makeProof(const int valueToProof) const;
-
-	std::string print() const;
-
-	bool isSet() const;
-
-private:
-	int value;
-	std::string secretKey;
-	std::string proofKit;
-};
-
-ProofKitPair::ProofKitPair()
-{
-	this->secretKey = "0";
-	this->proofKit = "0";
-}
-
-ProofKitPair::ProofKitPair(const int value)
-{
-	int randomInt = rand();
-	std::string secret = SHA256HashString(std::to_string(randomInt));
-	std::string proofKit = SHA256HashString(secret);
-
-	for(int i = 0; i < value; ++i) {
-		proofKit = SHA256HashString(proofKit);
-	}
-
-	this->secretKey = secret;
-	this->proofKit = proofKit;
-	this->value = value;
-}
-
-std::string ProofKitPair::makeProof(const int valueToProof) const
-{
-	if(this->value < valueToProof) {
-		throw std::invalid_argument("Value of the proofkit cannot be smaller than the value to proof!");
-	}
-
-	std::string proof = SHA256HashString(this->secretKey);
-
-	for(int i = 0; i < (this->value - valueToProof); ++i) {
-		proof = SHA256HashString(proof);
-	}
-
-	return proof;
-}
 
 bool checkProof(const std::string proofKit, const std::string proof, const int valueToProof)
 {
 	std::string prf = proof;
 	for(int i = 0; i < valueToProof; ++i) {
-		prf = SHA256HashString(prf);
+		prf = HashHelper::SHA256HashString(prf);
 	}
 
 	return !prf.compare(proofKit);

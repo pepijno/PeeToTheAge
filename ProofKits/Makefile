@@ -1,2 +1,35 @@
+#CC=g++
+#CPPFLAGS=-std=c++1y -O2 -fpermissive -lcryptopp
+#MAIN=main.o
+#EXECUTABLE=bin/proofKit
+#INCLDIR=include/
+#CPP_FILES := $(wildcard src/*.cpp)
+#OBJ_FILES := $(addprefix obj/,$(notdir $(CPP_FILES:.cpp=.o)))
+#
+#DEPDIR := .d
+#$(shell mkdir -p $(DEPDIR) >/dev/null)
+#DEPFLAGS = -MT $@ -MMD -MP -MF $(DEPDIR)/$*.Td
+#
+#COMPILE.cc = $(CC) $(DEPFLAGS) $(CPPFLAGS) -I$(INCLDIR) -c
+#POSTCOMPILE = mv -f $(DEPDIR)/$*.Td $(DEPDIR)/$*.d
+#
+#all: $(EXECUTABLE)
+#
+#$(EXECUTABLE): obj/$(MAIN) $(OBJ_FILES)
+#	$(CC) $(CPPFLAGS) -o $@ $^
+#
+#obj/%.o : src/%.cpp $(DEPDIR)/%.d
+#	$(COMPILE.cc) $(OUTPUT_OPTION) $<
+#	$(POSTCOMPILE)
+#
+#clean:
+#	rm -f $(OBJ_FILES) $(MAIN) $(EXECUTABLE)
+#	rm -rf $(DEPDIR)
+#
+#$(DEPDIR)/%.d: ;
+#.PRECIOUS: $(DEPDIR)/%.d
+#
+#-include $(addprefix .d/,$(notdir $(CPP_FILES:.cpp=.d)))
+
 all:
-	g++ -o proofKit proofKit.cpp -lcryptopp -Wall -fpermissive
+	g++ -o bin/proofKit src/*.cpp -Iinclude -Wall -fpermissive -lcryptopp
