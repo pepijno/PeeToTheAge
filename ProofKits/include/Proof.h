@@ -10,6 +10,7 @@ class Proof
 {
 public:
 	Proof();
+	Proof(const std::string proof);
 	Proof(const ProofKitPair& proofKitPair, const unsigned int value);
 
 	std::string getProof() const { return this->proof; }

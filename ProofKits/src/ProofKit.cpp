@@ -19,7 +19,7 @@ ProofKit::ProofKit(const std::string secretKey, const unsigned int value, const 
 {
 	std::string proofKit = HashHelper::SHA256HashString(secretKey);
 
-	int val = value;
+	unsigned int val = value;
 	if(!greater) {
 		val = HashHelper::maxValue - value;
 	}

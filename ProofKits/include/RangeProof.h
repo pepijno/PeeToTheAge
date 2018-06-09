@@ -13,6 +13,8 @@ public:
 	RangeProof(const std::string lowerProofKit, const std::string upperProofKit, const std::string secretKey, const unsigned int value);
 	RangeProof(const unsigned int value);
 
+	const SecretKey& getSecretKey1() { return this->lowerProofKitPair.getSecretKey(); }
+	const SecretKey& getSecretKey2() { return this->lowerProofKitPair.getSecretKey(); }
 	const ProofKit& getLowerProofKit() { return this->lowerProofKitPair.getProofKit(); }
 	const ProofKit& getUpperProofKit() { return this->upperProofKitPair.getProofKit(); }
 	const Proof& getLowerProof() { return this->lowerProof; }

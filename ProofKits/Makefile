@@ -32,6 +32,6 @@
 #-include $(addprefix .d/,$(notdir $(CPP_FILES:.cpp=.d)))
 
 all:
-	g++ -o bin/proofKit src/*.cpp -Iinclude -Wall -fpermissive -lcryptopp
-debug:
-	g++ -o bin/proofKit src/*.cpp -Iinclude -Wall -fpermissive -lcryptopp -D_DEBUG
+	g++ -o bin/generateProof src/generateProof.cpp src/Proof.cpp src/ProofKit.cpp src/ProofKitPair.cpp src/Prover.cpp src/RangeProof.cpp src/SecretKey.cpp -Iinclude -Wall -fpermissive -lcryptopp -D_DEBUG
+	g++ -o bin/makeProofKit src/makeProofKit.cpp src/Proof.cpp src/ProofKit.cpp src/ProofKitPair.cpp src/Prover.cpp src/RangeProof.cpp src/SecretKey.cpp -Iinclude -Wall -fpermissive -lcryptopp -D_DEBUG
+	g++ -o bin/checkProof src/checkProof.cpp src/Proof.cpp src/ProofKit.cpp src/ProofKitPair.cpp src/Prover.cpp src/RangeProof.cpp src/SecretKey.cpp -Iinclude -Wall -fpermissive -lcryptopp -D_DEBUG

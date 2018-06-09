@@ -1,4 +1,5 @@
 #include "RangeProof.h"
+#include "HashHelper.h"
 #include "Misc.h"
 
 RangeProof::RangeProof()
@@ -23,12 +24,15 @@ RangeProof::RangeProof(const std::string lowerProofKit, const std::string upperP
 
 RangeProof::RangeProof(const unsigned int value)
 {
-	ProofKitPair proofKitPair(value, true);
+	unsigned int randomInt = rand();
+	std::string secret = HashHelper::SHA256HashString(std::to_string(randomInt));
+
+	ProofKitPair proofKitPair(value, secret, true);
 	this->lowerProofKitPair = proofKitPair;
 
 	int val = Misc::maxValue - value;
 
-	ProofKitPair prfKitPair(val, true);
+	ProofKitPair prfKitPair(val, secret, true);
 	this->upperProofKitPair = prfKitPair;
 
 #ifdef _DEBUG

@@ -10,6 +10,11 @@ Proof::Proof()
 	this->proof = "";
 }
 
+Proof::Proof(const std::string proof)
+{
+	this->proof = proof;
+}
+
 Proof::Proof(const ProofKitPair& proofKitPair, const unsigned int value)
 {
 	if(proofKitPair.getProofKit().getValue() < value) {
@@ -23,7 +28,7 @@ Proof::Proof(const ProofKitPair& proofKitPair, const unsigned int value)
 
 	std::string proof = HashHelper::SHA256HashString(proofKitPair.getSecretKey().getKey());
 
-	for(int i = 0; i < (proofKitPair.getProofKit().getValue() - value); ++i) {
+	for(unsigned int i = 0; i < (proofKitPair.getProofKit().getValue() - value); ++i) {
 #ifdef _DEBUG
 		std::cerr << proof << "\n";
 #endif
@@ -39,7 +44,7 @@ Proof::Proof(const ProofKitPair& proofKitPair, const unsigned int value)
 bool Proof::proveProof(const ProofKit& proofKit, const unsigned int value) const
 {
 	std::string prf = this->proof;
-	for(int i = 0; i < value; ++i) {
+	for(unsigned int i = 0; i < value; ++i) {
 		prf = HashHelper::SHA256HashString(prf);
 #ifdef _DEBUG
 		std::cerr << prf << "\n";

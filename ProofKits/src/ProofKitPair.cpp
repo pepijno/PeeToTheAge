@@ -16,11 +16,8 @@ ProofKitPair::ProofKitPair(const std::string proofKit, const std::string secretK
 	this->proofKit = prfKit;
 }
 
-ProofKitPair::ProofKitPair(const unsigned int value, const bool greater)
+ProofKitPair::ProofKitPair(const unsigned int value, const std::string secret, const bool greater)
 {
-	unsigned int randomInt = rand();
-	std::string secret = HashHelper::SHA256HashString(std::to_string(randomInt));
-
 	SecretKey secretKey(secret);
 	this->secretKey = secretKey;
 
