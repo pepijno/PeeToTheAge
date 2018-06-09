@@ -2,5 +2,5 @@
 
 namespace Misc
 {
-	const unsigned int maxValue = 1000;
+	const unsigned int maxValue = 100000;
 }

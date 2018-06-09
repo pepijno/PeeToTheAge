@@ -10,6 +10,7 @@ class RangeProof
 {
 public:
 	RangeProof();
+	RangeProof(const std::string lowerProofKit, const std::string upperProofKit, const std::string secretKey, const unsigned int value);
 	RangeProof(const unsigned int value);
 
 	const ProofKit& getLowerProofKit() { return this->lowerProofKitPair.getProofKit(); }

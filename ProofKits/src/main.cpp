@@ -71,7 +71,13 @@ void Sign()
 
 int main(int argc, char* argv[])
 {
-	srand(time(NULL));
+	std::string lowerProofKit = argv[1];
+	std::string upperProofKit = argv[2];
+	std::string secretKey = argv[3];
+	unsigned int value = std::atoi(argv[4]);
+	unsigned int lower = std::atoi(argv[5]);
+	unsigned int upper = std::atoi(argv[6]);
+	/*srand(time(NULL));
 
 	std::unique_ptr<RangeProof> rangeProof(new RangeProof());
 
@@ -118,7 +124,15 @@ int main(int argc, char* argv[])
 			std::cin >> choice;
 		}
 
-	}
+	}*/
+
+	RangeProof rangeProof(lowerProofKit, upperProofKit, secretKey, value);
+	rangeProof.generateProof(lower, upper);
+
+	std::cout << "{"
+		<< "\"lowerProof\": \"" << rangeProof.getLowerProof().getProof() << "\","
+		<< "\"upperProof\": \"" << rangeProof.getUpperProof().getProof() << "\""
+		<< "}" << std::endl;
 
 	return 0;
 }

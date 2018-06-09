@@ -7,6 +7,15 @@ ProofKitPair::ProofKitPair()
 {
 }
 
+ProofKitPair::ProofKitPair(const std::string proofKit, const std::string secretKey, const unsigned int value)
+{
+	SecretKey sctKey(secretKey);
+	this->secretKey = sctKey;
+
+	ProofKit prfKit(value, proofKit);
+	this->proofKit = prfKit;
+}
+
 ProofKitPair::ProofKitPair(const unsigned int value, const bool greater)
 {
 	unsigned int randomInt = rand();

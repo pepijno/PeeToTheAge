@@ -10,6 +10,7 @@ class ProofKitPair
 {
 public:
 	ProofKitPair();
+	ProofKitPair(const std::string proofKit, const std::string secretKey, const unsigned int value);
 	ProofKitPair(const unsigned int value, const bool greater);
 
 	const SecretKey& getSecretKey() const { return this->secretKey; }

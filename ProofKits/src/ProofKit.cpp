@@ -9,6 +9,12 @@ ProofKit::ProofKit()
 	this->value = 0;
 }
 
+ProofKit::ProofKit(const unsigned int value, const std::string proofKit)
+{
+	this->proofKit = proofKit;
+	this->value = value;
+}
+
 ProofKit::ProofKit(const std::string secretKey, const unsigned int value, const bool greater)
 {
 	std::string proofKit = HashHelper::SHA256HashString(secretKey);
