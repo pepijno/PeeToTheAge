@@ -1,6 +1,8 @@
 #include <iostream>
 #include <cstdlib>
 #include <sstream>
+#include <memory>
+
 #include <cryptopp/sha.h>
 #include <cryptopp/filters.h>
 #include <crypto++/rsa.h>
@@ -84,21 +86,30 @@ std::string SHA256HashString(std::string aString)
 class ProofKitPair
 {
 public:
+	ProofKitPair();
 	ProofKitPair(const int value);
 
-	const std::string getSecretKey() { return this->secretKey; }
-	const std::string getProofKit() { return this->proofKit; }
-	const int getValue() { return this->value; }
+	std::string getSecretKey() const { return this->secretKey; }
+	std::string getProofKit() const { return this->proofKit; }
+	int getValue() const { return this->value; }
 
-	const std::string makeProof(const int valueToProof);
+	std::string makeProof(const int valueToProof) const;
 
-	const std::string print();
+	std::string print() const;
+
+	bool isSet() const;
 
 private:
 	int value;
 	std::string secretKey;
 	std::string proofKit;
 };
+
+ProofKitPair::ProofKitPair()
+{
+	this->secretKey = "0";
+	this->proofKit = "0";
+}
 
 ProofKitPair::ProofKitPair(const int value)
 {
@@ -112,9 +123,10 @@ ProofKitPair::ProofKitPair(const int value)
 
 	this->secretKey = secret;
 	this->proofKit = proofKit;
+	this->value = value;
 }
 
-const std::string ProofKitPair::makeProof(const int valueToProof)
+std::string ProofKitPair::makeProof(const int valueToProof) const
 {
 	if(this->value < valueToProof) {
 		throw std::invalid_argument("Value of the proofkit cannot be smaller than the value to proof!");
@@ -123,13 +135,13 @@ const std::string ProofKitPair::makeProof(const int valueToProof)
 	std::string proof = SHA256HashString(this->secretKey);
 
 	for(int i = 0; i < (this->value - valueToProof); ++i) {
-		proof = SHA256HashString(this->secretKey);
+		proof = SHA256HashString(proof);
 	}
 
 	return proof;
 }
 
-const bool checkProof(const std::string proofKit, const std::string proof, const int valueToProof)
+bool checkProof(const std::string proofKit, const std::string proof, const int valueToProof)
 {
 	std::string prf = proof;
 	for(int i = 0; i < valueToProof; ++i) {
@@ -139,7 +151,7 @@ const bool checkProof(const std::string proofKit, const std::string proof, const
 	return !prf.compare(proofKit);
 }
 
-const std::string ProofKitPair::print()
+std::string ProofKitPair::print() const
 {
 	std::stringstream ss;
 
@@ -148,14 +160,26 @@ const std::string ProofKitPair::print()
 	return ss.str();
 }
 
+bool ProofKitPair::isSet() const
+{
+	return this->secretKey.compare("0") && this->proofKit.compare("0");
+}
+
 int main(int argc, char* argv[])
 {
 	srand(time(NULL));
 
-	ProofKitPair* proofKitPair;
+	std::unique_ptr<ProofKitPair> proofKitPair(new ProofKitPair());
+
+	int value;
+	std::string proof = "";
 
 	int choice;
 	while(true) {
+		if(proofKitPair->isSet()) {
+			std::cout << "ProofKit present:\n" << proofKitPair->print() << std::endl;
+		}
+
 		std::cout << " 0 - Generate proof kit.\n";
 		std::cout << " 1 - Make proof.\n";
 		std::cout << " 2 - Check proof with proof kit.\n";
@@ -166,21 +190,44 @@ int main(int argc, char* argv[])
 		switch (choice)
 		{
 			case 0:
+				proof = "";
 				std::cout << "Enter the current value to generate a proof kit from: ";
-				int value;
 				std::cin >> value;
 
-				proofKitPair = new ProofKitPair(value);
-
-				std::cout << proofKitPair->print();
-
+				proofKitPair.reset(new ProofKitPair(value));
 				break;
 			case 1:
-				std::cout << "Story so far....\n";
-				// rest of code here
+				if(!proofKitPair->isSet()) {
+					std::cout << "No proofkit generated yet!\n\n";
+					break;
+				}
+
+				std::cout << "Enter the value you want to generate a proof for: ";
+				std::cin >> value;
+
+				proof = proofKitPair->makeProof(value);
+				std::cout << "Proof: " << proof << "\n\n";
+
 				break;
 			case 2:
-				std::cout << "Ahahah, you really think I will help you?\n";
+				if(!proof.compare("")) {
+					std::cout << "No proof generated yet!\n\n";
+					break;
+				}
+
+				std::cout << "The current proof is: " << proof << "\n\n";
+				std::cout << "Enter the value to prove: ";
+				std::cin >> value;
+
+				bool correct = checkProof(proofKitPair->getProofKit(), proof, value);
+
+				if(correct) {
+					std::cout << "Proof is valid!\n\n";
+					break;
+				}
+
+				std::cout << "Proof is not valid!\n\n";
+
 				// rest of code here
 				break;
 			default:
@@ -191,10 +238,6 @@ int main(int argc, char* argv[])
 		}
 
 	}
-
-	delete proofKitPair;
-
-	int toProveValue = std::atoi(argv[1]);
 
 	//ProofKitPair proofKitPair(toProveValue);
 
