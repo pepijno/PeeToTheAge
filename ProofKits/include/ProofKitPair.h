@@ -3,22 +3,23 @@
 #include <iostream>
 #include <cstdlib>
 
+#include "SecretKey.h"
+#include "ProofKit.h"
+
 class ProofKitPair
 {
 public:
 	ProofKitPair();
-	ProofKitPair(const unsigned int value);
+	ProofKitPair(const unsigned int value, const bool greater);
 
-	std::string getSecretKey() const { return this->secretKey; }
-	std::string getProofKit() const { return this->proofKit; }
-	int getValue() const { return this->value; }
+	const SecretKey& getSecretKey() const { return this->secretKey; }
+	const ProofKit& getProofKit() const { return this->proofKit; }
 
 	std::string print() const;
 
 	bool isSet() const;
 
 private:
-	unsigned int value;
-	std::string secretKey;
-	std::string proofKit;
+	ProofKit proofKit;
+	SecretKey secretKey;
 };

@@ -8,42 +8,47 @@
 Proof::Proof()
 {
 	this->proof = "";
-	this->valueToProve = 0;
 }
 
 Proof::Proof(const ProofKitPair& proofKitPair, const unsigned int value)
 {
-	if(proofKitPair.getValue() < value) {
+	if(proofKitPair.getProofKit().getValue() < value) {
 		throw std::invalid_argument("Value of the proofkit cannot be smaller than the value to proof!");
 	}
 
-	std::string proof = HashHelper::SHA256HashString(proofKitPair.getSecretKey());
+#ifdef _DEBUG
+	std::cerr << proofKitPair.getProofKit().getValue() << "\n";
+	std::cerr << value << "\n";
+#endif
 
-	for(int i = 0; i < (proofKitPair.getValue() - value); ++i) {
+	std::string proof = HashHelper::SHA256HashString(proofKitPair.getSecretKey().getKey());
+
+	for(int i = 0; i < (proofKitPair.getProofKit().getValue() - value); ++i) {
 #ifdef _DEBUG
 		std::cerr << proof << "\n";
 #endif
 		proof = HashHelper::SHA256HashString(proof);
 	}
 #ifdef _DEBUG
-	std::cerr << proof << "\n";
+	std::cerr << proof << "\n\n";
 #endif
 
 	this->proof = proof;
-	this->valueToProve = value;
 }
 
-bool Proof::proveProof(const ProofKitPair& proofKitPair) const
+bool Proof::proveProof(const ProofKit& proofKit, const unsigned int value) const
 {
 	std::string prf = this->proof;
-	for(int i = 0; i < this->valueToProve; ++i) {
+	for(int i = 0; i < value; ++i) {
 		prf = HashHelper::SHA256HashString(prf);
 #ifdef _DEBUG
 		std::cerr << prf << "\n";
 #endif
 	}
 
-	return !prf.compare(proofKitPair.getProofKit());
+	std::cerr << "\n";
+
+	return !prf.compare(proofKit.getProofKit());
 }
 
 bool Proof::isSet() const
@@ -55,8 +60,9 @@ std::string Proof::print() const
 {
 	std::stringstream ss;
 
-	ss << "Value to prove: " << this->valueToProve << "\n";
-	ss << "Proof: " << this->proof << "\n";
+	ss << "Proof(\n"
+		<< "\tProof: " << this->proof << ",\n"
+		<< ")\n";
 
 	return ss.str();
 }

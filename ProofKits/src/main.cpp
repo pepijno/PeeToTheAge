@@ -6,6 +6,8 @@
 #include "HashHelper.h"
 #include "ProofKitPair.h"
 #include "Proof.h"
+#include "RangeProof.h"
+#include "Prover.h"
 
 /*void GenKeyPair()
 {
@@ -71,17 +73,13 @@ int main(int argc, char* argv[])
 {
 	srand(time(NULL));
 
-	std::unique_ptr<ProofKitPair> proofKitPair(new ProofKitPair());
-	std::unique_ptr<Proof> proof(new Proof());
+	std::unique_ptr<RangeProof> rangeProof(new RangeProof());
 
 	unsigned int value;
+	unsigned int second;
 
 	int choice;
 	while(true) {
-		if(proofKitPair->isSet()) {
-			std::cout << "ProofKit present:\n" << proofKitPair->print() << std::endl;
-		}
-
 		std::cout << " 0 - Generate proof kit.\n";
 		std::cout << " 1 - Make proof.\n";
 		std::cout << " 2 - Check proof with proof kit.\n";
@@ -89,57 +87,38 @@ int main(int argc, char* argv[])
 
 		std::cin >> choice;
 
-		switch (choice)
-		{
-			case 0:
-				proof.reset(new Proof());
-				std::cout << "Enter the current value to generate a proof kit from: ";
-				std::cin >> value;
+		if(choice == 0) {
+			std::cout << "Enter the current value to generate a proof kit from: ";
+			std::cin >> value;
 
-				proofKitPair.reset(new ProofKitPair(value));
-				break;
-			case 1:
-				if(!proofKitPair->isSet()) {
-					std::cout << "No proofkit generated yet!\n\n";
-					break;
-				}
+			rangeProof.reset(new RangeProof(value));
+		} else if(choice == 1) {
+			std::cout << "Enter the lower bound you want generate a proof for: ";
+			std::cin >> value;
+			std::cout << "Enter the upper bound you want to generate a proof for: ";
+			std::cin >> second;
 
-				std::cout << "Enter the value you want to generate a proof for: ";
-				std::cin >> value;
+			rangeProof->generateProof(value, second);
+		} else if(choice == 2) {
+			std::cout << "Enter the lower bound to prove: ";
+			std::cin >> value;
+			std::cout << "Enter the upper bound to prove: ";
+			std::cin >> second;
 
-				proof.reset(new Proof(*proofKitPair.get(), value));
-				std::cout << proof->print();
+			Prover prover(rangeProof->getLowerProofKit(), rangeProof->getUpperProofKit(), rangeProof->getLowerProof(), rangeProof->getUpperProof());
 
-				break;
-			case 2:
-				if(!proof->isSet()) {
-					std::cout << "No proof generated yet!\n\n";
-					break;
-				}
-
-				std::cout << proof->print();
-				std::cout << "Enter the value to prove: ";
-				std::cin >> value;
-
-				if(proof->proveProof(*proofKitPair.get())) {
-					std::cout << "Proof is valid!\n\n";
-					break;
-				}
-
+			if(prover.prove(value, second)) {
+				std::cout << "Proof is valid!\n\n";
+			} else {
 				std::cout << "Proof is not valid!\n\n";
-
-				// rest of code here
-				break;
-			default:
-				std::cout << "Not a Valid Choice. \n";
-				std::cout << "Choose again.\n";
-				std::cin >> choice;
-				break;
+			}
+		} else {
+			std::cout << "Not a Valid Choice. \n";
+			std::cout << "Choose again.\n";
+			std::cin >> choice;
 		}
 
 	}
-
-	//ProofKitPair proofKitPair(toProveValue);
 
 	return 0;
 }

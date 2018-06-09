@@ -21,4 +21,6 @@ namespace HashHelper
 
 		return digest;
 	}
+
+	const unsigned int maxValue = 1000;
 }

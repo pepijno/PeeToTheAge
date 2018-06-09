@@ -4,6 +4,7 @@
 #include <cstdlib>
 
 #include "ProofKitPair.h"
+#include "ProofKit.h"
 
 class Proof
 {
@@ -12,9 +13,8 @@ public:
 	Proof(const ProofKitPair& proofKitPair, const unsigned int value);
 
 	std::string getProof() const { return this->proof; }
-	unsigned int getValueToProve() const { return this->valueToProve; }
 
-	bool proveProof(const ProofKitPair& proofKitPair) const;
+	bool proveProof(const ProofKit& proofKit, const unsigned int value) const;
 
 	bool isSet() const;
 
@@ -22,5 +22,4 @@ public:
 
 private:
 	std::string proof;
-	unsigned int valueToProve;
 };
