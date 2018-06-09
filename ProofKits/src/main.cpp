@@ -5,6 +5,7 @@
 
 #include "HashHelper.h"
 #include "ProofKitPair.h"
+#include "Proof.h"
 
 /*void GenKeyPair()
 {
@@ -66,39 +67,14 @@ void Sign()
 	sinksig.Put(sbbSignature, sbbSignature.size());
 }*/
 
-
-bool checkProof(const std::string proofKit, const std::string proof, const int valueToProof)
-{
-	std::string prf = proof;
-	for(int i = 0; i < valueToProof; ++i) {
-		prf = HashHelper::SHA256HashString(prf);
-	}
-
-	return !prf.compare(proofKit);
-}
-
-std::string ProofKitPair::print() const
-{
-	std::stringstream ss;
-
-	ss << "Secret Key: " << this->secretKey << std::endl << "ProofKit: " << this->proofKit << std::endl;
-
-	return ss.str();
-}
-
-bool ProofKitPair::isSet() const
-{
-	return this->secretKey.compare("0") && this->proofKit.compare("0");
-}
-
 int main(int argc, char* argv[])
 {
 	srand(time(NULL));
 
 	std::unique_ptr<ProofKitPair> proofKitPair(new ProofKitPair());
+	std::unique_ptr<Proof> proof(new Proof());
 
-	int value;
-	std::string proof = "";
+	unsigned int value;
 
 	int choice;
 	while(true) {
@@ -116,7 +92,7 @@ int main(int argc, char* argv[])
 		switch (choice)
 		{
 			case 0:
-				proof = "";
+				proof.reset(new Proof());
 				std::cout << "Enter the current value to generate a proof kit from: ";
 				std::cin >> value;
 
@@ -131,23 +107,21 @@ int main(int argc, char* argv[])
 				std::cout << "Enter the value you want to generate a proof for: ";
 				std::cin >> value;
 
-				proof = proofKitPair->makeProof(value);
-				std::cout << "Proof: " << proof << "\n\n";
+				proof.reset(new Proof(*proofKitPair.get(), value));
+				std::cout << proof->print();
 
 				break;
 			case 2:
-				if(!proof.compare("")) {
+				if(!proof->isSet()) {
 					std::cout << "No proof generated yet!\n\n";
 					break;
 				}
 
-				std::cout << "The current proof is: " << proof << "\n\n";
+				std::cout << proof->print();
 				std::cout << "Enter the value to prove: ";
 				std::cin >> value;
 
-				bool correct = checkProof(proofKitPair->getProofKit(), proof, value);
-
-				if(correct) {
+				if(proof->proveProof(*proofKitPair.get())) {
 					std::cout << "Proof is valid!\n\n";
 					break;
 				}

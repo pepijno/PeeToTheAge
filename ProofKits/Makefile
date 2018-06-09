@@ -33,3 +33,5 @@
 
 all:
 	g++ -o bin/proofKit src/*.cpp -Iinclude -Wall -fpermissive -lcryptopp
+debug:
+	g++ -o bin/proofKit src/*.cpp -Iinclude -Wall -fpermissive -lcryptopp -D_DEBUG

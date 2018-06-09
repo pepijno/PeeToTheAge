@@ -1,3 +1,5 @@
+#include <sstream>
+
 #include "HashHelper.h"
 #include "ProofKitPair.h"
 
@@ -7,32 +9,37 @@ ProofKitPair::ProofKitPair()
 	this->proofKit = "0";
 }
 
-ProofKitPair::ProofKitPair(const int value)
+ProofKitPair::ProofKitPair(const unsigned int value)
 {
-	int randomInt = rand();
+	unsigned int randomInt = rand();
 	std::string secret = HashHelper::SHA256HashString(std::to_string(randomInt));
 	std::string proofKit = HashHelper::SHA256HashString(secret);
 
-	for(int i = 0; i < value; ++i) {
+	for(unsigned int i = 0; i < value; ++i) {
+#ifdef _DEBUG
+		std::cerr << proofKit << "\n";
+#endif
 		proofKit = HashHelper::SHA256HashString(proofKit);
 	}
+#ifdef _DEBUG
+	std::cerr << proofKit << "\n";
+#endif
 
 	this->secretKey = secret;
 	this->proofKit = proofKit;
 	this->value = value;
 }
 
-std::string ProofKitPair::makeProof(const int valueToProof) const
+std::string ProofKitPair::print() const
 {
-	if(this->value < valueToProof) {
-		throw std::invalid_argument("Value of the proofkit cannot be smaller than the value to proof!");
-	}
+	std::stringstream ss;
 
-	std::string proof = HashHelper::SHA256HashString(this->secretKey);
+	ss << "Secret Key: " << this->secretKey << std::endl << "ProofKit: " << this->proofKit << std::endl;
 
-	for(int i = 0; i < (this->value - valueToProof); ++i) {
-		proof = HashHelper::SHA256HashString(proof);
-	}
+	return ss.str();
+}
 
-	return proof;
+bool ProofKitPair::isSet() const
+{
+	return this->secretKey.compare("0") && this->proofKit.compare("0");
 }
