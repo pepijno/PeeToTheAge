@@ -3,7 +3,7 @@ import Images from './Images';
 
 class ProofKitListItem extends Component{
     renderImage(logo) {
-        if(logo === 'tesla') {
+        if(logo === 'deloitte') {
             return Images.tesla;
         }
 

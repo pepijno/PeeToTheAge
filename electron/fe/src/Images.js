@@ -1,6 +1,6 @@
 const Images = {
     abn: require('./abn.png'),
-    tesla: require('./tesla.jpg'),
+    tesla: require('./deloitte.jpg'),
 }
 
 export default Images;
