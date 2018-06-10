@@ -55,6 +55,18 @@
 #include "pistache/endpoint.h"
 #include "pistache/tcp.h"
 
+
+#include <iostream>
+#include <cstdlib>
+#include <sstream>
+#include <memory>
+
+#include "./ProofKits/include/HashHelper.h"
+#include "./ProofKits/include/ProofKitPair.h"
+#include "./ProofKits/include/Proof.h"
+#include "./ProofKits/include/RangeProof.h"
+#include "./ProofKits/include/Prover.h"
+
 QJsonObject ObjectFromString(const QString& in);
 
 QJsonObject recursiveJSONobj(QJsonObject obj);
@@ -74,6 +86,31 @@ void printCookies(const Http::Request& req) {
 	}
 	std::cout << "]" << std::endl;
 }
+
+QJsonObject proofkitGen(unsigned int value)
+{
+
+	RangeProof rangeProof(value);
+
+	std::stringstream buffer;
+	QJsonObject myObj = QJsonObject();
+	
+	myObj.insert("lowerProofKit", QJsonValue(QString::fromStdString(rangeProof.getLowerProofKit().getProofKit() )));
+	myObj.insert("upperProofKit", QJsonValue(QString::fromStdString(rangeProof.getUpperProofKit().getProofKit()  )));
+	myObj.insert("secret", QJsonValue(QString::fromStdString(rangeProof.getSecretKey1().getKey() )));
+	
+	//~ buffer << "{"
+		//~ << "\"lowerProofKit\": \"" << rangeProof.getLowerProofKit().getProofKit() << "\","
+		//~ << "\"upperProofKit\": \"" << rangeProof.getUpperProofKit().getProofKit() << "\""
+		//~ << "\"secret\": \"" << rangeProof.getSecretKey1().getKey() << "\""
+		//~ << "}" << std::endl;
+
+	//~ return buffer.str();
+	
+	return myObj;
+
+}
+
 
 namespace Generic {
 
@@ -157,6 +194,7 @@ private:
 
 		response.headers().add<Header::ContentType>(MIME(Application, Json));
 		response.send(Http::Code::Ok, utf8_text);
+		//~ proofkitGen(lel);
 		//~ response.send(Http::Code::Ok, );
 	}
 
@@ -337,7 +375,10 @@ QJsonObject recursiveJSONobj(QJsonObject obj)
 			QJsonValue takenAmount = obj.take(key);
 			double geldBedragDouble = takenAmount.toString().toDouble();
 			int geldBedrag = (int) round(geldBedragDouble * 10);
-			obj.insert(key, QJsonValue(abs(geldBedrag)));
+			geldBedrag = min(geldBedrag, 100000);
+			
+			obj.insert(key, proofkitGen(abs(geldBedrag)));
+			//~ obj.insert(key, QJsonValue(abs(geldBedrag)));
 		}
 
 
