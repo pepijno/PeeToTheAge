@@ -89,7 +89,6 @@ void printCookies(const Http::Request& req) {
 
 QJsonObject proofkitGen(unsigned int value)
 {
-
 	RangeProof rangeProof(value);
 
 	std::stringstream buffer;
@@ -184,9 +183,13 @@ private:
 		qDebug() << transactionArrayVal.isArray();
 
 		QJsonArray transactionArray = transactionArrayVal.toArray();
+		
+		QJsonArray jsonArray = QJsonArray();
+		
+		jsonArray.append(transactionArray.at(lel));
 
 		QJsonDocument doc;
-		doc.setObject(recursiveJSONarray(transactionArray).at(lel).toObject());
+		doc.setObject(recursiveJSONarray(jsonArray).at(0).toObject());
 		QString dataToString(doc.toJson());
 
 		std::string utf8_text = dataToString.toUtf8().constData();
@@ -374,11 +377,11 @@ QJsonObject recursiveJSONobj(QJsonObject obj)
 			qDebug() << obj.value(key).toString();
 			QJsonValue takenAmount = obj.take(key);
 			double geldBedragDouble = takenAmount.toString().toDouble();
-			int geldBedrag = (int) round(geldBedragDouble * 10);
+			int geldBedrag = (int) round(geldBedragDouble);
 			geldBedrag = min(geldBedrag, 100000);
 			
-			obj.insert(key, proofkitGen(abs(geldBedrag)));
-			//~ obj.insert(key, QJsonValue(abs(geldBedrag)));
+			obj.insert("amount_proof", proofkitGen(abs(geldBedrag)));
+			obj.insert(key, QJsonValue(abs(geldBedrag)));
 		}
 
 
